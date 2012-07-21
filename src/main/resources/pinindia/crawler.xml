@@ -1,0 +1,51 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/cxf 
+		http://camel.apache.org/schema/cxf/camel-cxf.xsd
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+        http://camel.apache.org/schema/spring 
+		http://camel.apache.org/schema/spring/camel-spring-2.8.1.xsd
+        http://cxf.apache.org/bindings/soap 
+		http://cxf.apache.org/schemas/configuration/soap.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util.xsd
+        http://cxf.apache.org/transports/http/configuration
+        http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+
+	
+   <!-- 
+   	CXF-RS CLIENT:
+   	FOR INVOKING A WEB ADDRESS AND FOR GETTING THE RESULT
+    -->
+	<jaxrs:client id="crawler" address="${PINCODE.SERVICE_HOSTED_ADDRESS}"  serviceClass="com.javataskforce.webharvest.pincodedotcom.crawler.Crawler" >
+		<jaxrs:features>
+			<ref bean="loggingFeature" />
+		</jaxrs:features>
+        <jaxrs:headers>
+             <entry key="Content-encoding" value="gzip"/>
+             <entry key="Charset" value="UTF-8"/>
+        </jaxrs:headers>
+	</jaxrs:client>
+	<bean id="loggingFeature" class="org.apache.cxf.feature.LoggingFeature" />								
+	<!--  
+		WEB CRAWLLERS 
+	-->	
+	
+	<bean id="invoker" abstract="true">
+   	    <property name="crawler" ref="crawler"></property>
+   	    <property name="template" ref="producerTemplate"></property>
+	 </bean>
+	   
+	 <bean id="statesServiceInvoker"    class="com.javataskforce.webharvest.pincodedotcom.invoker.StatesInvoker"    parent="invoker"/>
+	 <bean id="districtsServiceInvoker" class="com.javataskforce.webharvest.pincodedotcom.invoker.DistrictsInvoker" parent="invoker"/>
+	 <bean id="pincodeServiceInvoker"   class="com.javataskforce.webharvest.pincodedotcom.invoker.PinCodeInvoker"   parent="invoker"/>
+
+</beans>

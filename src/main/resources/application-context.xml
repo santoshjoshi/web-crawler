@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:amq="http://activemq.apache.org/schema/core" xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd ">
+         
+        
+        <!-- 
+        	Importing file for handling camel routes for scrapping data
+        	from site
+         --> 	
+        <import resource="classpath:/pinindia/camel-routes.xml"/>
+        	<!-- SERVICE INVOKERS -->
+		<import resource="classpath:pinindia/crawler.xml" />
+		<import resource="classpath:pinindia/crawl-db.xml"/>
+        
+        <camel:camelContext id="camel-centext">
+         	
+         	<camel:propertyPlaceholder id="pin-properties" location="classpath:pinindia/context.properties"/>
+			
+			<!-- 
+				PRODUCER TEAMPLATE
+			 -->
+			<camel:template id="producerTemplate"  />
+			
+			<!-- 
+				IMPORTING ROUTES 
+			 -->
+			<camel:routeContextRef  ref="camel-routes-context" />
+			
+        </camel:camelContext>
+</beans>

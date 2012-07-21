@@ -1,0 +1,1 @@
+start /w /b /min java -cp hsqldb.jar org.hsqldb.Server pause

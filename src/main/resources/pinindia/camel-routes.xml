@@ -1,0 +1,98 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/cxf 
+		http://camel.apache.org/schema/cxf/camel-cxf.xsd
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+        http://camel.apache.org/schema/spring 
+		http://camel.apache.org/schema/spring/camel-spring-2.8.1.xsd
+        http://cxf.apache.org/bindings/soap 
+		http://cxf.apache.org/schemas/configuration/soap.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util.xsd
+        http://cxf.apache.org/transports/http/configuration
+        http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<!-- Property configurer -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:pinindia/context.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<bean id="consumableTransformerBean" class="com.javataskforce.webharvest.fwk.invoker.ConsumableTransformerBean" />
+
+	<camel:routeContext id="camel-routes-context">
+
+		<!-- CAMEL CONTEXT -->
+		<camel:route id="states-invoke-route-wic">
+			<camel:from uri="quartz://myGroup/myTimerName?cron=30 51 23 15 07 ? 2012" />
+			<camel:to uri="bean:statesServiceInvoker?method=invoke" />
+		</camel:route>
+		
+		<camel:route id="districts-invoke-route-wic">
+			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State?consumer.query=select state from com.javataskforce.webharvest.persistence.entity.state.State state  where state.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=4" />
+			<camel:bean ref="consumableTransformerBean" method="consume" />
+			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State"/>
+			<camel:to uri="bean:districtsServiceInvoker?method=invoke" />
+		</camel:route>
+		
+		<camel:route id="pincode-invoke-route-wic">
+			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=5" />
+			<camel:bean ref="consumableTransformerBean" method="consume" />
+			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District"/>
+			<camel:to uri="bean:pincodeServiceInvoker?method=invoke" />
+		</camel:route>
+
+		<camel:route id="state-split-store-route-wic">
+			<camel:from uri="seda:statesStore" />
+			<camel:split streaming="true" parallelProcessing="true">
+				<camel:simple>body</camel:simple>
+				<camel:pipeline>
+					<camel:to pattern="InOnly"	uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State" />
+				</camel:pipeline>
+			</camel:split>
+		</camel:route>
+		
+		<camel:route id="district-split-store-route-wic">
+			<camel:from uri="seda:districtStore" />
+			<camel:split streaming="true" parallelProcessing="true">
+				<camel:simple>body</camel:simple>
+				<camel:pipeline>
+					<camel:to pattern="InOnly"	uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District" />
+				</camel:pipeline>
+			</camel:split>
+		</camel:route>
+		
+		<camel:route id="pincode-split-store-route-wic">
+			<camel:from uri="seda:pincodeStore" />
+			<camel:onException>
+			    <camel:exception>org.apache.camel.spring.processor.onexception.OrderFailedException</camel:exception>
+				<!-- mark this as handled -->
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+				<camel:log message=" exception occured for ${body}" />
+			</camel:onException>
+			<camel:split streaming="true" parallelProcessing="true">
+				<camel:simple>body</camel:simple>
+				<camel:pipeline>
+					<camel:to pattern="InOnly"	uri="jpa://com.javataskforce.webharvest.persistence.entity.city.City" />
+				</camel:pipeline>
+			</camel:split>
+			<camel:log message="completed"></camel:log>
+		</camel:route>
+		
+	</camel:routeContext>
+</beans>
