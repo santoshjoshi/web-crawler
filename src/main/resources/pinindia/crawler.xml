@@ -25,7 +25,7 @@
    	CXF-RS CLIENT:
    	FOR INVOKING A WEB ADDRESS AND FOR GETTING THE RESULT
     -->
-	<jaxrs:client id="crawler" address="${PINCODE.SERVICE_HOSTED_ADDRESS}"  serviceClass="com.javataskforce.webharvest.pincodedotcom.crawler.Crawler" >
+	<jaxrs:client id="crawler" address="${SERVICE_HOSTED_ADDRESS}"  serviceClass="com.javataskforce.webharvest.crawler.Crawler" >
 		<jaxrs:features>
 			<ref bean="loggingFeature" />
 		</jaxrs:features>
@@ -44,8 +44,8 @@
    	    <property name="template" ref="producerTemplate"></property>
 	 </bean>
 	   
-	 <bean id="statesServiceInvoker"    class="com.javataskforce.webharvest.pincodedotcom.invoker.StatesInvoker"    parent="invoker"/>
-	 <bean id="districtsServiceInvoker" class="com.javataskforce.webharvest.pincodedotcom.invoker.DistrictsInvoker" parent="invoker"/>
-	 <bean id="pincodeServiceInvoker"   class="com.javataskforce.webharvest.pincodedotcom.invoker.PinCodeInvoker"   parent="invoker"/>
+	 <bean id="statesServiceInvoker"    class="com.javataskforce.webharvest.invoker.StatesInvoker"    parent="invoker"/>
+	 <bean id="districtsServiceInvoker" class="com.javataskforce.webharvest.invoker.DistrictsInvoker" parent="invoker"/>
+	 <bean id="pincodeServiceInvoker"   class="com.javataskforce.webharvest.invoker.PinCodeInvoker"   parent="invoker"/>
 
 </beans>

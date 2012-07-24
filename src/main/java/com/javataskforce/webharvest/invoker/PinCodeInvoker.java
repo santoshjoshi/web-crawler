@@ -1,4 +1,4 @@
-package com.javataskforce.webharvest.pincodedotcom.invoker;
+package com.javataskforce.webharvest.invoker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +12,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.javataskforce.webharvest.crawler.impl.PinCodeCrawler;
 import com.javataskforce.webharvest.fwk.invoker.AbstractInvoker;
 import com.javataskforce.webharvest.fwk.util.CleanHTMLDocument;
 import com.javataskforce.webharvest.fwk.util.XPathReader;
 import com.javataskforce.webharvest.persistence.entity.EntityStatus;
 import com.javataskforce.webharvest.persistence.entity.city.City;
 import com.javataskforce.webharvest.persistence.entity.districts.District;
-import com.javataskforce.webharvest.pincodedotcom.crawler.impl.PinCodeCrawler;
 
 /**
  * 

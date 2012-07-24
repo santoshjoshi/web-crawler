@@ -1,4 +1,4 @@
-package com.javataskforce.webharvest.pincodedotcom.crawler.impl;
+package com.javataskforce.webharvest.crawler.impl;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

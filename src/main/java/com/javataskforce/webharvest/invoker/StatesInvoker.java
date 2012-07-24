@@ -1,4 +1,4 @@
-package com.javataskforce.webharvest.pincodedotcom.invoker;
+package com.javataskforce.webharvest.invoker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.javataskforce.webharvest.crawler.impl.StatesCrawler;
 import com.javataskforce.webharvest.fwk.invoker.AbstractInvoker;
 import com.javataskforce.webharvest.fwk.util.CleanHTMLDocument;
 import com.javataskforce.webharvest.fwk.util.XPathReader;
 import com.javataskforce.webharvest.persistence.entity.EntityStatus;
 import com.javataskforce.webharvest.persistence.entity.state.State;
-import com.javataskforce.webharvest.pincodedotcom.crawler.impl.StatesCrawler;
 
 /**
  * 
@@ -37,8 +37,6 @@ public class StatesInvoker extends AbstractInvoker<Object> {
 	public StatesCrawler getCrawler() {
 		return crawler;
 	}
-
-
 	/**
 	 * @param crawler the crawler to set
 	 */
@@ -52,7 +50,7 @@ public class StatesInvoker extends AbstractInvoker<Object> {
  
 		String statesResponse = crawler.getStates();
 		Document document = CleanHTMLDocument.getXHTMLDocument(statesResponse);
-		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("//ul[class = 'al' ]/li/a", document, XPathConstants.NODESET);
+		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("/html/body/div[@id='states']/div/span/a", document, XPathConstants.NODESET);
 		
 		List<State> states = new ArrayList<State>();
 		

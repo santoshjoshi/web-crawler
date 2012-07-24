@@ -38,26 +38,26 @@
 	<camel:routeContext id="camel-routes-context">
 
 		<!-- CAMEL CONTEXT -->
-		<camel:route id="states-invoke-route-wic">
-			<camel:from uri="quartz://myGroup/myTimerName?cron=30 51 23 15 07 ? 2012" />
-			<camel:to uri="bean:statesServiceInvoker?method=invoke" />
+		<camel:route id="states-invoke-route">
+			<camel:from uri="quartz://myGroup/myTimerName?cron=* */1 * 24 07 ? 2012" />
+			<camel:to uri="bean:statesServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="districts-invoke-route-wic">
+		<camel:route id="districts-invoke-route">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State?consumer.query=select state from com.javataskforce.webharvest.persistence.entity.state.State state  where state.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=4" />
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State"/>
-			<camel:to uri="bean:districtsServiceInvoker?method=invoke" />
+			<camel:to uri="bean:districtsServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="pincode-invoke-route-wic">
+		<camel:route id="pincode-invoke-route">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=5" />
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District"/>
-			<camel:to uri="bean:pincodeServiceInvoker?method=invoke" />
+			<camel:to uri="bean:pincodeServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 
-		<camel:route id="state-split-store-route-wic">
+		<camel:route id="state-split-store-route">
 			<camel:from uri="seda:statesStore" />
 			<camel:split streaming="true" parallelProcessing="true">
 				<camel:simple>body</camel:simple>
@@ -67,7 +67,7 @@
 			</camel:split>
 		</camel:route>
 		
-		<camel:route id="district-split-store-route-wic">
+		<camel:route id="district-split-store-route">
 			<camel:from uri="seda:districtStore" />
 			<camel:split streaming="true" parallelProcessing="true">
 				<camel:simple>body</camel:simple>
@@ -77,10 +77,10 @@
 			</camel:split>
 		</camel:route>
 		
-		<camel:route id="pincode-split-store-route-wic">
+		<camel:route id="pincode-split-store-route">
 			<camel:from uri="seda:pincodeStore" />
 			<camel:onException>
-			    <camel:exception>org.apache.camel.spring.processor.onexception.OrderFailedException</camel:exception>
+			    <camel:exception>java.lang.Exception</camel:exception>
 				<!-- mark this as handled -->
     			<camel:handled><camel:constant>true</camel:constant></camel:handled>
 				<camel:log message=" exception occured for ${body}" />
