@@ -47,7 +47,7 @@
 		</camel:route>
 		
 		<camel:route id="pincode-invoke-route" autoStartup="true">
-			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=5" />
+			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=50" />
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District"/>
 			<camel:to uri="bean:pincodeServiceInvoker?method=invokeAndParse" />
