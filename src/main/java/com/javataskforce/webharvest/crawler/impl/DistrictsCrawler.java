@@ -5,6 +5,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 
 /**
@@ -20,6 +21,6 @@ public interface DistrictsCrawler {
 	@Produces(value = "text/plain")
 	@Consumes(value = "text/plain")
 	@Path(value = "/{statePage}")
-	public String getDistricts(@PathParam("statePage") String state);
+	public String getDistricts(@PathParam("statePage") String state, @QueryParam("statecode") String stateCode, @QueryParam("statename") String stateName );
 	
 }

@@ -19,10 +19,6 @@
         http://cxf.apache.org/transports/http/configuration
         http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-
 	<!-- Property configurer -->
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -39,18 +35,18 @@
 
 		<!-- CAMEL CONTEXT -->
 		<camel:route id="states-invoke-route">
-			<camel:from uri="quartz://myGroup/myTimerName?cron=* */1 * 24 07 ? 2012" />
+			<camel:from uri="quartz://myGroup/myTimerName?cron=10 27 23 25 07 ? 2016" />
 			<camel:to uri="bean:statesServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="districts-invoke-route">
+		<camel:route id="districts-invoke-route" autoStartup="true">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State?consumer.query=select state from com.javataskforce.webharvest.persistence.entity.state.State state  where state.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=4" />
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State"/>
 			<camel:to uri="bean:districtsServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="pincode-invoke-route">
+		<camel:route id="pincode-invoke-route" autoStartup="true">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=5" />
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District"/>

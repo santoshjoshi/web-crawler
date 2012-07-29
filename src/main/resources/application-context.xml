@@ -22,7 +22,9 @@
         
         <camel:camelContext id="camel-centext">
          	
+         	
          	<camel:propertyPlaceholder id="pin-properties" location="classpath:pinindia/context.properties"/>
+			<camel:jmxAgent id="agent" mbeanObjectDomainName="javataskforce.com" />
 			
 			<!-- 
 				PRODUCER TEAMPLATE

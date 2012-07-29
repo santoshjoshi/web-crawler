@@ -49,49 +49,31 @@ public class DistrictsInvoker extends AbstractInvoker<State> {
 	@Override
 	public void invokeAndParse(State state) {
  
-		String statesResponse = crawler.getDistricts(state.getInformation().split("/")[3]);
+		String[] params  =state.getInformation().split("\\?") ;
+		
+		String statesResponse = crawler.getDistricts(params[0], params[1].split("&")[0].replace("statecode=", ""),  params[1].split("&")[1].replace("statename=", ""));
 		
 		Document document = CleanHTMLDocument.getXHTMLDocument(statesResponse);
-		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("//table[class='plist']/tbody/tr", document, XPathConstants.NODESET);
+		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("//body/div/span/a", document, XPathConstants.NODESET);
 		
 		List<District> districts = new ArrayList<District>();
-		
 		for (int index = 0; index < nodeList.getLength(); index++) {
 			Node aNode = nodeList.item(index);
 			NodeList childNodes = aNode.getChildNodes();
-
-			if(childNodes != null){
+			
+			NamedNodeMap attributes = aNode.getAttributes();
+			String link = attributes.getNamedItem("href").getNodeValue();
+			if (childNodes != null) {
 				
-				for (int i = 0; i < childNodes.getLength(); i++) {
-					
-					Node childNode = childNodes.item(i);
-					if("td".equalsIgnoreCase(childNode.getNodeName()) ){
-						NamedNodeMap attributes = aNode.getAttributes();
-						
-						String totalTd = attributes.getNamedItem("colspan").getNodeValue();
-						if(totalTd != null && 3< Integer.parseInt(totalTd)){
-							continue;
-						}
-						for (int j = 0; j < childNode.getChildNodes().getLength(); j++) {
-							Node deepChildNode = childNode.getChildNodes().item(j);
-							if(deepChildNode != null){
-								String link = deepChildNode.getAttributes().getNamedItem("href").getNodeValue();
-								if(childNode.getNodeType() == Node.TEXT_NODE ){
-									logger.warn("Key {} --> value {} ",link, childNode.getNodeValue() );
-									
-									District district  = new District();
-									district.setStateCode(state.getStateCode()+"");
-									district.setEntityStatus(EntityStatus.INITIAL);
-									district.setName(childNode.getNodeValue());
-									district.setInformation(link);
-									districts.add(district);
-								}
-							}
-						}
-					}
-				}
+				District district  = new District();
+				district.setStateCode(state.getStateCode()+"");
+				district.setEntityStatus(EntityStatus.INITIAL);
+				district.setName(childNodes.item(0).getNodeValue());
+				district.setInformation(link);
+				districts.add(district);
 			}
 		}
+ 
 		logger.warn("Districts {}", districts.toString());
 		template.sendBody("seda:districtStore", ExchangePattern.InOnly, districts);
 	}
