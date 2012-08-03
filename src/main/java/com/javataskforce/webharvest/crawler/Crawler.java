@@ -7,7 +7,7 @@ import com.javataskforce.webharvest.crawler.impl.StatesCrawler;
 
 
 /**
- * Service for fetching Hotels.
+ * Crawl the site and fetch the data
  * 
  * @author Santosh Joshi
  * 

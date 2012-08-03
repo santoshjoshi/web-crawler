@@ -8,6 +8,13 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Node;
 
+/**
+ *  
+ * @author Santosh Joshi
+ * 
+ * XPATH parser out of a html/xml document
+ *
+ */
 public class XPathReader {
 
 	 

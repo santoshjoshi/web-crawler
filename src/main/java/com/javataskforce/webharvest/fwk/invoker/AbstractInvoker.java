@@ -2,6 +2,12 @@ package com.javataskforce.webharvest.fwk.invoker;
 
 import org.apache.camel.ProducerTemplate;
 
+/**
+ * 
+ * @author Santosh Joshi
+ *
+ * @param <T>
+ */
 public abstract class AbstractInvoker<T>  implements Invoker<T>{
 
 	protected ProducerTemplate template;

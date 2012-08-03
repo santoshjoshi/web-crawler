@@ -19,7 +19,7 @@
 		">
 
 <!--
-	DB PROPERTIES RELATED TO BOOKING DOT COM IN MEMORY DB  
+	DB PROPERTIES  
  -->
 	<context:annotation-config/>
  
@@ -49,7 +49,7 @@
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="url" value="jdbc:hsqldb:hsql://localhost/webharvest" />
 		<property name="username" value="SA" />
-		<property name="password" value="aaaa" />
+		<property name="password" value="" />
 		<property name="initialSize" value="5" />
 		<property name="maxActive" value="10" />
 	</bean>

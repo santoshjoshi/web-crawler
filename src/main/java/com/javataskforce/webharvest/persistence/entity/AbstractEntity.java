@@ -10,7 +10,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * @author santosh 
+ * @author Santosh Joshi
  *
  */
 @MappedSuperclass

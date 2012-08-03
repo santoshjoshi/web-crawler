@@ -31,23 +31,51 @@
 
 	<bean id="consumableTransformerBean" class="com.javataskforce.webharvest.fwk.invoker.ConsumableTransformerBean" />
 
+	<!--
+		CAMEL ROUTES COUNTEXT 
+	 -->
 	<camel:routeContext id="camel-routes-context">
 
 		<!-- CAMEL CONTEXT -->
+		<!--
+			Fetch States of a Country 
+		 -->
 		<camel:route id="states-invoke-route">
-			<camel:from uri="quartz://myGroup/myTimerName?cron=10 27 23 25 07 ? 2016" />
+			<camel:from uri="quartz://myGroup/myTimerName?cron=30 06 00 03 08 ? 2016" />
 			<camel:to uri="bean:statesServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="districts-invoke-route" autoStartup="true">
+		<!-- 
+			Fetch Districts of a State
+		 -->
+		<camel:route id="districts-invoke-route" autoStartup="false" routePolicyRef="district-route-policy">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State?consumer.query=select state from com.javataskforce.webharvest.persistence.entity.state.State state  where state.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=4" />
+			<camel:setHeader headerName="stateCode"><camel:simple>${body.stateCode}</camel:simple></camel:setHeader>
+			<camel:onException>
+			    <camel:exception>java.lang.Exception</camel:exception>
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+    			<camel:setBody><camel:simple>${header.stateCode}</camel:simple></camel:setBody>
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
+				<camel:to uri="sql:update state set entitystatus = 3, remarks ='exception occured' where stateCode = # ?dataSourceRef=hsqlDataSource"/>
+			</camel:onException>
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State"/>
 			<camel:to uri="bean:districtsServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 		
-		<camel:route id="pincode-invoke-route" autoStartup="true">
+		<!-- 
+			Fetch Areas of a District in a State
+		 -->
+		<camel:route id="pincode-invoke-route" autoStartup="false" routePolicyRef="pincode-route-policy">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District?consumer.query=select district from com.javataskforce.webharvest.persistence.entity.districts.District district  where district.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=50" />
+			<camel:setHeader headerName="stateCode"><camel:simple>${body.code}</camel:simple></camel:setHeader>
+			<camel:onException>
+			    <camel:exception>java.lang.Exception</camel:exception>
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+    			<camel:setBody><camel:simple>${header.code}</camel:simple></camel:setBody>
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
+				<camel:to uri="sql:update district set entitystatus = 3, remarks ='exception occured' where code = # ?dataSourceRef=hsqlDataSource"/>
+			</camel:onException>
 			<camel:bean ref="consumableTransformerBean" method="consume" />
 			<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.districts.District"/>
 			<camel:to uri="bean:pincodeServiceInvoker?method=invokeAndParse" />
@@ -55,6 +83,11 @@
 
 		<camel:route id="state-split-store-route">
 			<camel:from uri="seda:statesStore" />
+			<camel:onException>
+			    <camel:exception>java.lang.Exception</camel:exception>
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
+			</camel:onException>
 			<camel:split streaming="true" parallelProcessing="true">
 				<camel:simple>body</camel:simple>
 				<camel:pipeline>
@@ -65,6 +98,11 @@
 		
 		<camel:route id="district-split-store-route">
 			<camel:from uri="seda:districtStore" />
+			<camel:onException>
+			    <camel:exception>java.lang.Exception</camel:exception>
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
+			</camel:onException>
 			<camel:split streaming="true" parallelProcessing="true">
 				<camel:simple>body</camel:simple>
 				<camel:pipeline>
@@ -77,9 +115,8 @@
 			<camel:from uri="seda:pincodeStore" />
 			<camel:onException>
 			    <camel:exception>java.lang.Exception</camel:exception>
-				<!-- mark this as handled -->
     			<camel:handled><camel:constant>true</camel:constant></camel:handled>
-				<camel:log message=" exception occured for ${body}" />
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
 			</camel:onException>
 			<camel:split streaming="true" parallelProcessing="true">
 				<camel:simple>body</camel:simple>

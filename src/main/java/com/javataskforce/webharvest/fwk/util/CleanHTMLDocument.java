@@ -11,6 +11,14 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 
+/**
+ * 
+ * @author Santosh Joshi
+ * 
+ * CLeaning of HTML document :
+ * 	making it well formed(XHTML)  
+ *
+ */
 public class CleanHTMLDocument {
 
 	/**

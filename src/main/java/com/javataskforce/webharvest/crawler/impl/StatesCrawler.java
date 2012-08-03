@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 
 
 /**
- * Service for fetching Hotels.
+ * Service for fetching States.
  * 
  * @author Santosh Joshi
  * 

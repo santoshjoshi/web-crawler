@@ -22,8 +22,14 @@ import com.javataskforce.webharvest.persistence.entity.state.State;
 
 /**
  * 
- * @author santosh
+ * @author Santosh Joshi
+ * 
  *
+ * a) Invokes the states Url for a country :
+ * b) fetched the page
+ * c) applies XPATH expression after cleaning (making it well formed)
+ * d) populates the Entity 
+ * e) pushes the entities to queue
  */
 public class StatesInvoker extends AbstractInvoker<Object> {
 	
@@ -50,7 +56,7 @@ public class StatesInvoker extends AbstractInvoker<Object> {
  
 		String statesResponse = crawler.getStates();
 		Document document = CleanHTMLDocument.getXHTMLDocument(statesResponse);
-		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("/html/body/div[@id='states']/div/span/a", document, XPathConstants.NODESET);
+		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("/html/body/table[@class='states']/tr/td[@class='stateslink']/a", document, XPathConstants.NODESET);
 		
 		List<State> states = new ArrayList<State>();
 		
@@ -76,14 +82,13 @@ public class StatesInvoker extends AbstractInvoker<Object> {
 									state.setInformation(link);
 									state.setEntityStatus(EntityStatus.INITIAL);
 									states.add(state);
-								 
 							}
 						}
 					}
 				}
 			}
 		}
-		logger.warn("MAP {}",  states);
+		logger.warn("States {}",  states);
 		template.sendBody("seda:statesStore", ExchangePattern.InOnly, states);
 	}
 }

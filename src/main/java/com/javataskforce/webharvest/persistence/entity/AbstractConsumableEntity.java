@@ -6,7 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 /**
- * @author vaibhav.goel
+ * @author Santosh Joshi
  *
  */
 @MappedSuperclass

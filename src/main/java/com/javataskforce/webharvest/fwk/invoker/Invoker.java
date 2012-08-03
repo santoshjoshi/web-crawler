@@ -3,7 +3,7 @@ package com.javataskforce.webharvest.fwk.invoker;
 
 /**
  * 
- * @author santosh
+ * @author Santosh Joshi
  *
  */
 public interface Invoker<T> {

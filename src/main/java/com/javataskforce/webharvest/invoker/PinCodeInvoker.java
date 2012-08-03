@@ -21,8 +21,14 @@ import com.javataskforce.webharvest.persistence.entity.districts.District;
 
 /**
  * 
- * @author santosh
+ * @author Santosh Joshi
+ * 
  *
+ * a) Invokes the pincodes Url for a district:
+ * b) fetched the page
+ * c) applies XPATH expression after cleaning (making it well formed)
+ * d) populates the Entity 
+ * e) pushes the entities to queue
  */
 public class PinCodeInvoker extends AbstractInvoker<District> {
 	
@@ -51,17 +57,14 @@ public class PinCodeInvoker extends AbstractInvoker<District> {
 		String statesResponse = crawler.getPinCodes(info[0],info[1].split("=")[1]);
 		
 		Document document = CleanHTMLDocument.getXHTMLDocument(statesResponse);
-		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("//body//table/tr", document, XPathConstants.NODESET);
+		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("/html/body/table[@class='areas']/tr/td[@class='pincodes']", document, XPathConstants.NODESET);
 		
 		List<City>  cities = new ArrayList<City>(300);
 		
 		for (int index = 0; index < nodeList.getLength(); index++) {
-			
-			
-			//for (int j = 0; index < childNodes.getLength(); j++) {
-				//NodeList childs = aNode.getChildNodes();
-				NodeList childNodes =  nodeList.item(index).getChildNodes();
-				if (childNodes != null) {
+
+			NodeList childNodes =  nodeList.item(index).getChildNodes();
+				if (childNodes != null && childNodes.item(0) != null && childNodes.item(1) != null) {
 					
 					City city = new City();
 					city.setEntityStatus(EntityStatus.COMPLETED);

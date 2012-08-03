@@ -23,8 +23,14 @@ import com.javataskforce.webharvest.persistence.entity.state.State;
 
 /**
  * 
- * @author santosh
+ * @author Santosh Joshi
+ * 
  *
+ * a) Invokes the districts Url for a state:
+ * b) fetched the page
+ * c) applies XPATH expression after cleaning (making it well formed)
+ * d) populates the Entity 
+ * e) pushes the entities to queue
  */
 public class DistrictsInvoker extends AbstractInvoker<State> {
 	
@@ -54,7 +60,7 @@ public class DistrictsInvoker extends AbstractInvoker<State> {
 		String statesResponse = crawler.getDistricts(params[0], params[1].split("&")[0].replace("statecode=", ""),  params[1].split("&")[1].replace("statename=", ""));
 		
 		Document document = CleanHTMLDocument.getXHTMLDocument(statesResponse);
-		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("//body/div/span/a", document, XPathConstants.NODESET);
+		NodeList nodeList= (NodeList) XPathReader.evaluateXPath("/html/body/table[@class='districts']/tr/td[@class='districtslinks']/a", document, XPathConstants.NODESET);
 		
 		List<District> districts = new ArrayList<District>();
 		for (int index = 0; index < nodeList.getLength(); index++) {
@@ -63,7 +69,7 @@ public class DistrictsInvoker extends AbstractInvoker<State> {
 			
 			NamedNodeMap attributes = aNode.getAttributes();
 			String link = attributes.getNamedItem("href").getNodeValue();
-			if (childNodes != null) {
+			if (childNodes != null && childNodes.item(0) != null) {
 				
 				District district  = new District();
 				district.setStateCode(state.getStateCode()+"");
