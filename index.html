@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="web-crawler : Crawling  the Web using Apache camel" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>web-crawler</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/santoshjoshi/web-crawler">View on GitHub</a>
+
+          <h1 id="project_title">web-crawler</h1>
+          <h2 id="project_tagline">Crawling  the Web using Apache camel</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/santoshjoshi/web-crawler/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/santoshjoshi/web-crawler/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2><strong>About the application:</strong></h2>
+
+<p>The application is all about harnessing the capabilities of below components to create a web crawler   that can crawl any site. 
+Here we are mainly interested in getting the pin code of various areas/cities across India from a site called <a href="http://javataskforce.com/">javataskforce.com</a>.</p>
+
+<h2><strong>This Application uses:</strong></h2>
+
+<ol>
+<li>
+<p>Apache CXF:</p>
+
+<p>For Making rest/http request to remote site and fetch the page.</p>
+</li>
+<li>
+<p>JPA/Hibernate with HSQLDB:</p>
+
+<p>Using JPA with hibernate to populate the HSQLDB with the information we are interested in </p>
+</li>
+<li>
+<p>Apache Camel:</p>
+
+<p>Coordinating between Apache CXF/JPA, leveraging many task that requires a lot of coding,        creating routes that states what to do and when to do</p>
+</li>
+</ol><h2>Overview:</h2>
+
+<p>The Whole application is interconnected by camel routes, which are as follows (all routes are defined in camel-routes.xml)</p>
+
+<ul>
+<li>
+<p><strong>states-invoke-route</strong>
+    1. invoke the crawler sevice to get state</p>
+
+<ol>
+<li>parse/process the states obtained</li>
+<li>put them in another Queue</li>
+<li>store the states into HSQLDB</li>
+</ol>
+</li>
+<li>
+<p><strong>districts-invoke-route</strong></p>
+
+<ol>
+<li>pool the DB( HsqlDb) and get the State with some particular status(INITIAL)</li>
+<li>update the status of State to (IN_PROCESS)</li>
+<li>invoke the crawler service to obtain districts for state</li>
+<li>parse/process the districts obtained</li>
+<li>put them in another Queue</li>
+<li>store the districts into HSQLDB</li>
+<li>mark the state as processed (COMPLETED)</li>
+</ol>
+</li>
+<li>
+<p><strong>pincode-invoke-route</strong></p>
+
+<ol>
+<li>pool the DB( HsqlDb) and get the District with some status(INITIAL)</li>
+<li>update the status of District to (IN_PROCESS)</li>
+<li>invoke the crawler service to obtain areas/cities for the fetched District</li>
+<li>parse/process the areas/cities obtained</li>
+<li>put them in another Queue</li>
+<li>store the area/city into HSQLDB</li>
+<li>mark the district as processed (COMPLETED)</li>
+</ol>
+</li>
+</ul><p>In a nutshell there are some routes which invokes a crawl url , the result of which is parsed/processed and then saved into the crawl Database</p>
+
+<h2>Configuring the application:</h2>
+
+<p><strong>Scheduling configuration:</strong></p>
+
+<ol>
+<li>Open camel-routes.xml and change the cron in statement to a suitable time 
+     <code>quartz://myGroup/myTimerName?cron=30 06 00 03 08 ? 2016</code>
+</li>
+<li>Open the camel-routing-policy.xml and schedule time for
+
+<ol>
+<li> districts-invoke-route</li>
+<li> pincode-route-policy</li>
+</ol>
+</li>
+</ol><h2>Running the application:</h2>
+
+<ol>
+<li>mvn clean install</li>
+<li>run the HSQL Database </li>
+<li>Go to hsqldb folder
+  Windows:  click db_sart.bat
+  Unix/Linux:  sh  db_start.sh</li>
+<li>mvn exec:exec<br>
+  This will execute <strong>com.javatask.Run</strong>
+</li>
+</ol><h2>Monitoring :</h2>
+
+<ol>
+<li>
+<p>Using Jconsole
+Application can be monitored using Jconsole at port 8764 ( port can be changed by changing  the jmx setting in pom.xml)</p>
+
+<p><code>&lt;argument&gt;-Dcom.sun.management.jmxremote&lt;/argument&gt;</code><br><code>&lt;argument&gt;-Dcom.sun.management.jmxremote.authenticate=false&lt;/argument&gt;</code><br><code>&lt;argument&gt;-Dcom.sun.management.jmxremote.ssl=false&lt;/argument&gt;</code><br><code>&lt;argument&gt;-Dcom.sun.management.jmxremote.port=8764&lt;/argument&gt;</code>       </p>
+
+<p>open Jsonsole and add
+      <code>service:jmx:rmi:///jndi/rmi://127.0.0.1:8764/jmxrmi</code></p>
+</li>
+<li>
+<p>Monitoring HSQL DB</p>
+
+<ul>
+<li>
+<p>Windows Client</p>
+
+<p>execute db_client.bat available in hsqldb folder</p>
+</li>
+</ul>
+</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">web-crawler maintained by <a href="https://github.com/santoshjoshi">santoshjoshi</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
