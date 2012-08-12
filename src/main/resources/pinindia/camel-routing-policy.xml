@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+		<!--  ROUTE SCHEDULER BEAN FOR-->	
+	
+
+		 <!--  Districts Fetch 
+		 	  ** This will start the route for fetching districts for states from javataskcorce.com 
+		 -->
+		 <bean id="district-route-policy" name="district-route-policy"  class="org.apache.camel.routepolicy.quartz.CronScheduledRoutePolicy">
+    			<property name="routeStartTime" value="0 50 18 22 12 ? 2015"/> <!--  second minute hour date month week year -->
+    			<property name="routeStopTime" value="0 55 18 22 12 ? 2015"/>
+		</bean>
+		
+		<!--  Area and Pin Code  Fetch 
+		 	  ** This will start the route for fetching areas and their pincodes for states from javataskcorce.com 
+		 -->
+		<bean id="pincode-route-policy" name="pincode-route-policy"  class="org.apache.camel.routepolicy.quartz.CronScheduledRoutePolicy">
+    			<property name="routeStartTime" value="0 50 18 22 12 ? 2015"/> <!--  second minute hour date month week year -->
+    			<property name="routeStopTime" value="0 55 18 22 12 ? 2015"/>
+		</bean>
+		
+</beans>		
