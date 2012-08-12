@@ -10,7 +10,7 @@ import com.javataskforce.webharvest.persistence.entity.AbstractConsumableEntity;
 
 /**
  * 
- * @author santoshjo
+ * @author Santosh Joshi
  * 
  */
 @Entity
