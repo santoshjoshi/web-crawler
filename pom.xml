@@ -254,19 +254,19 @@
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency><!--
 
 		<dependency>
 			<groupId>com.sun</groupId>
 			<artifactId>tools</artifactId>
 			<version>1.6.0</version>
 			<scope>system</scope>
-			<!-- <systemPath>/opt/jdk1.6.0_14/lib/tools.jar</systemPath> -->
+			 <systemPath>/opt/jdk1.6.0_14/lib/tools.jar</systemPath> 
 			<systemPath>C:\Program Files\Java\jdk1.6.0_30\lib\tools.jar</systemPath>
 		</dependency>
-	</dependencies>
+	--></dependencies>
 
-	<profiles>
+	<!--<profiles>
 		<profile>
 			<id>default-tools.jar</id>
 			<activation>
@@ -281,13 +281,13 @@
 					<artifactId>tools</artifactId>
 					<version>1.6.0</version>
 					<scope>system</scope>
-					<!-- <systemPath>/opt/jdk1.6.0_14/lib/tools.jar</systemPath> -->
-					<systemPath>C:\Program Files\Java\jdk1.6.0_30\lib\tools.jar</systemPath>
+					 <systemPath>/opt/jdk1.6.0_14/lib/tools.jar</systemPath> 
+					<systemPath>C:\Program Files (x86)\Java\jdk1.6.0_07\lib\tools.jar</systemPath>
 				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>
-	<build>
+	--><build>
 		<finalName>Harvester</finalName>
 		<defaultGoal>install</defaultGoal>
 
