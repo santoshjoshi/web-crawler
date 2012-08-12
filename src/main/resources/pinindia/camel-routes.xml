@@ -29,8 +29,17 @@
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
 
-	<bean id="consumableTransformerBean" class="com.javataskforce.webharvest.fwk.invoker.ConsumableTransformerBean" />
+	<bean id="consumableTransformerBean" class="com.javataskforce.webharvest.transform.ConsumableTransformerBean" />
 
+<!-- 
+
+SANTOSH
+ -->
+ <bean  id="CleanDocument" class="com.javataskforce.webharvest.util.CleanHTMLDocument"></bean>
+ <bean  id="stateTransformers" class="com.javataskforce.webharvest.transform.StateTransformer"></bean>
+<!-- 
+SANTOSH
+ --> 
 	<!--
 		CAMEL ROUTES COUNTEXT 
 	 -->
@@ -40,15 +49,31 @@
 		<!--
 			Fetch States of a Country 
 		 -->
-		<camel:route id="states-invoke-route">
-			<camel:from uri="quartz://myGroup/myTimerName?cron=30 06 00 03 08 ? 2016" />
-			<camel:to uri="bean:statesServiceInvoker?method=invokeAndParse" />
+		 
+		 
+		<camel:route id="states-fetch-route">
+			<camel:from uri="quartz://myGroup/myTimerName1?cron=50 47 15 12 08 ? 2017" />
+			<camel:onException>
+			    <camel:exception>java.lang.Exception</camel:exception>
+    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
+				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
+			</camel:onException>
+			<camel:to uri="bean:crawler?method=getStates" />
+			<camel:bean ref="CleanDocument" method="getXHTMLDocument"></camel:bean>
+			<camel:split streaming="true" parallelProcessing="true">
+				<camel:xpath>/html/body/table[@class='states']/tr/td[@class='stateslink']/a</camel:xpath>
+				<camel:convertBodyTo type="java.lang.String" />
+				<camel:unmarshal ref="jaxb-state" />
+				<camel:bean ref="stateTransformers" />
+				<camel:to pattern="InOnly" uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State"/>
+				<camel:log message="${body.name} ------ ${body.information}"/>
+			</camel:split>	
 		</camel:route>
 		
 		<!-- 
 			Fetch Districts of a State
 		 -->
-		<camel:route id="districts-invoke-route" autoStartup="false" routePolicyRef="district-route-policy">
+		<camel:route id="districts-invoke-route" autoStartup="true" routePolicyRef="district-route-policy">
 			<camel:from uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State?consumer.query=select state from com.javataskforce.webharvest.persistence.entity.state.State state  where state.entityStatus=com.javataskforce.webharvest.persistence.entity.EntityStatus.INITIAL &amp;consumeLockEntity=true&amp;consumeDelete=false&amp;consumer.delay=1000&amp;maximumResults=4" />
 			<camel:setHeader headerName="stateCode"><camel:simple>${body.stateCode}</camel:simple></camel:setHeader>
 			<camel:onException>
@@ -81,21 +106,6 @@
 			<camel:to uri="bean:pincodeServiceInvoker?method=invokeAndParse" />
 		</camel:route>
 
-		<camel:route id="state-split-store-route">
-			<camel:from uri="seda:statesStore" />
-			<camel:onException>
-			    <camel:exception>java.lang.Exception</camel:exception>
-    			<camel:handled><camel:constant>true</camel:constant></camel:handled>
-				<camel:log message=" exception occured for ${body}" loggingLevel="ERROR" />
-			</camel:onException>
-			<camel:split streaming="true" parallelProcessing="true">
-				<camel:simple>body</camel:simple>
-				<camel:pipeline>
-					<camel:to pattern="InOnly"	uri="jpa://com.javataskforce.webharvest.persistence.entity.state.State" />
-				</camel:pipeline>
-			</camel:split>
-		</camel:route>
-		
 		<camel:route id="district-split-store-route">
 			<camel:from uri="seda:districtStore" />
 			<camel:onException>

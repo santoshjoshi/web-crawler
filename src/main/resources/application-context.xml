@@ -16,13 +16,18 @@
         	from site
          --> 	
         <import resource="classpath:/pinindia/camel-routes.xml"/>
-        	<!-- SERVICE INVOKERS -->
+        <!-- 
+        	ROUTING POLICIES
+         -->
+         <import resource="classpath:/pinindia/camel-routing-policy.xml"/>
+        <!-- SERVICE INVOKERS -->
 		<import resource="classpath:pinindia/crawler.xml" />
 		<import resource="classpath:pinindia/crawl-db.xml"/>
         
         <camel:camelContext id="camel-centext">
          	
-         	
+
+         
          	<camel:propertyPlaceholder id="pin-properties" location="classpath:pinindia/context.properties"/>
 			<camel:jmxAgent id="agent" mbeanObjectDomainName="javataskforce.com" />
 			
@@ -31,10 +36,14 @@
 			 -->
 			<camel:template id="producerTemplate"  />
 			
-			<!-- 
+						<!-- 
 				IMPORTING ROUTES 
 			 -->
 			<camel:routeContextRef  ref="camel-routes-context" />
 			
+	      <camel:dataFormats>
+        	<camel:jaxb id="jaxb-state"	  prettyPrint="false" contextPath="com.javataskforce.webharvest.model.state"/>
+         </camel:dataFormats> 
+
         </camel:camelContext>
 </beans>

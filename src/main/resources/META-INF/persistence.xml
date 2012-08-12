@@ -13,7 +13,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 
 	<persistence-unit name="wic" transaction-type="RESOURCE_LOCAL">
-		<class>com.javataskforce.webharvest.persistence.entity.country.Country</class>
 		<class>com.javataskforce.webharvest.persistence.entity.state.State</class>
 		<class>com.javataskforce.webharvest.persistence.entity.districts.District</class>
 		<class>com.javataskforce.webharvest.persistence.entity.city.City</class>
@@ -31,7 +30,7 @@
 			<property name="hibernate.c3p0.max_size" value="50"/>
 			<property name="hibernate.c3p0.min_size" value="10"/>
 			<property name="hibernate.c3p0.timeout" value="300"/>
-			<property name="hibernate.c3p0.max_statements" value="100"/>
-		--></properties>
+			<property name="hibernate.c3p0.max_statements" value="100"/>-->
+		</properties>
 	</persistence-unit>
 </persistence>
