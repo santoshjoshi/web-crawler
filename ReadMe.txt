@@ -1,8 +1,7 @@
 About the application :
 -----------------------------------------
 
-	The application is all about harnessing the capabilities of below components to create a web crawler
-	that can crawl any site.  
+The application is all about harnessing the capabilities of below components to create a web crawler that can crawl any site.  
 	
 	So here we are mainly interested in getting the pin code of various areas/cities across India from a site called javataskforce.com.
 	
