@@ -1,5 +1,5 @@
-
 About the application :
+-----------------------------------------
 
 	The application is all about harnessing the capabilities of below components to create a web crawler
 	that can crawl any site.  
