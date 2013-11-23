@@ -7,26 +7,30 @@ So here we are mainly interested in getting the pin code of various areas/cities
 	
 #####This Application uses:
 		
-		a) Apache CXF:
-				 making rest/http request to remote site and fetch the page.
-		b) JPA/Hibernate with HSQLDB 
-				 using japa with hibernate to populate the HSQLDB with the information we are interested in  
-		c) Apache Camel
-				coordinating between cxf/jpa, leveraging many task that requires a lot of coding,
-				creating routes that states what to do and when to do
+* #####Apache CXF:
+   
+  &nbsp;&nbsp;&nbsp;making rest/http request to remote site and fetch the page.
+* #####JPA/Hibernate with HSQLDB
+
+  &nbsp;&nbsp;&nbsp;using japa with hibernate to populate the HSQLDB with the information we are interested in  
+* ####Apache Camel
+  
+  &nbsp;&nbsp;&nbsp;coordinating between cxf/jpa, leveraging many task that requires a lot of coding, creating routes that states what to do and when to do
 
 
 #####Overview:
 
-The Whole application is interconnected by camel routes, which are as follows (all routes are defined in camel-routes.xml)
+  The Whole application is interconnected by camel routes, which are as follows (all routes are defined in camel-routes.xml)
 	
-a) states-invoke-route
+* #####states-invoke-route
+
 		i)   invoke the crawler sevice to get state
-		ii)  parse/process the states obtained
+		ii)   parse/process the states obtained
 		iii) put them in another Queue
-		iv)  store the states into HSQLDB
+	        iv)  stoe the states into HSQLDB
 		
-b) districts-invoke-route
+* #####districts-invoke-route
+
 		i)   pool the DB( HsqlDb) and get the State with some particular status(INITIAL)
 		ii)  update the status of State to (IN_PROCESS)
 		iii) invoke the crawler service to obtain districts for state
@@ -35,7 +39,7 @@ b) districts-invoke-route
 		vi)  store the districts into HSQLDB
 		vii)  mark the state as processed (COMPLETED)
 		
-c) pincode-invoke-route
+* #####pincode-invoke-route
 		i)   pool the DB( HsqlDb) and get the District with some status(INITIAL)
 		ii)  update the status of District to (IN_PROCESS)
 		iii) invoke the crawler service to obtain areas/cities for the fetched District
