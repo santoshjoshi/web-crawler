@@ -53,17 +53,18 @@ In a nutshell there are some routes which invokes a crawl url , the result of wh
 saved into the crawl Database
 	
 	
-Configuring the application:
-	a) scheduling configuation:
-		a) open camel-routes.xml and  change the cron in statement to a suitable time 
+#####Configuring the application:
+
+	Scheduling configuation:
+		   a) open camel-routes.xml and  change the cron in statement to a suitable time 
 			quartz://myGroup/myTimerName?cron=30 06 00 03 08 ? 2016
 		
-		b) open the camel-routing-policy.xml and  schedule time for
+		    b) open the camel-routing-policy.xml and  schedule time for
 			i)  districts-invoke-route
 			ii)  pincode-route-policy
 			
 			
-Running the application:
+#####Running the application:
 
 	a) mvn clean install
 	b) run the HSQL Database 
@@ -72,11 +73,11 @@ Running the application:
 		  		i)  click db_sart.bat
 		  on Unix/Linux
 		  		i)  sh  db_start.sh
-		  		
-   d) mvn exec:exec	  		
+	d) mvn exec:exec	  		
 		this will execute com.javatask.Run
+	
 		
-Monitoring :
+#####Monitoring :
 	a) Application can be monitored using Jconsole at port 86764( port can be changed by changing the jmx setting in pom.xml)
 		<argument>-Dcom.sun.management.jmxremote</argument>
 		<argument>-Dcom.sun.management.jmxremote.authenticate=false</argument>
